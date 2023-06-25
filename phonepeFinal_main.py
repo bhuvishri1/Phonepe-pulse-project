@@ -136,6 +136,27 @@ if option=="Map":
             fig.update_geos(fitbounds="locations", visible=False)
             st.plotly_chart(fig,use_container_width=True)
 
+            st.markdown("## :violet[Select any State to explore more]")
+            state_name= st.selectbox("",
+                             ('andaman-&-nicobar-islands','andhra-pradesh','arunachal-pradesh','assam','bihar',
+                              'chandigarh','chhattisgarh','dadra-&-nagar-haveli-&-daman-&-diu','delhi','goa','gujarat','haryana',
+                              'himachal-pradesh','jammu-&-kashmir','jharkhand','karnataka','kerala','ladakh','lakshadweep',
+                              'madhya-pradesh','maharashtra','manipur','meghalaya','mizoram',
+                              'nagaland','odisha','puducherry','punjab','rajasthan','sikkim',
+                              'tamil-nadu','telangana','tripura','uttar-pradesh','uttarakhand','west-bengal'),index=30)
+         
+            mycursor.execute(f"select State, District,Year,Quater, sum(Transaction_count) as Total_Transactions, sum(Transaction_amount) as Total_amount from map_trans where year = {yr} and quater = {qtr} and State = '{state_name}' group by State, District,Year,Quater order by State,District")
+        
+            df = pd.DataFrame(mycursor.fetchall(), columns=['State','District','Year','Quarter',
+                                                         'Total_Transactions','Total_amount'])
+            fig = px.bar(df,
+                     title=state_name,
+                     x="District",
+                     y="Total_Transactions",
+                     color='Total_amount',
+                     color_continuous_scale=px.colors.sequential.Agsunset)
+            st.plotly_chart(fig,use_container_width=True)
+
            
     
 
